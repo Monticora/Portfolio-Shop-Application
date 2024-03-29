@@ -1,23 +1,37 @@
 import { Typography, Grid, Divider, TableContainer, Table, TableBody, TableRow, TableCell } from '@mui/material';
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { Product } from "../../app/models/product";
 import agent from '../../app/api/agent';
 import NotFound from '../../errors/NotFound';
 import LoadingComponent from '../../app/layout/LoadingComponent';
+import { getCurrency } from '../../app/util/util';
+import { useStoreContext } from '../../app/context/StoreContext';
+import { LoadingButton } from '@mui/lab';
 
 export default function ProductDetails(){
 
+    const {basket, setBasket} = useStoreContext();
     const {id} = useParams<{id: string}>();
     const [product, setProduct] = useState<Product | null>(null);
     const [loading, setLoading] = useState(true);
+
+    const item = basket?.items.find(i => i.productId === product?.id);
+
+    function handleAddItem(productId: string){
+        setLoading(true);
+        agent.Basket.addItem(productId)
+                    .then(basket => setBasket(basket))
+                    .catch(error => console.log(error))
+                    .finally(() => setLoading(false));
+    }
 
     useEffect(() => {
         id && agent.Catalog.details(id)
         .then(response => setProduct(response))
         .catch(error => console.log(error))
         .finally(() => setLoading(false))
-    }, [id])
+    }, [id, item])
 
     if(loading) return <LoadingComponent message='Product loading...'/>
 
@@ -31,7 +45,7 @@ export default function ProductDetails(){
             <Grid item xs={6}>
                 <Typography variant='h3'>{product.name}</Typography>
                 <Divider sx={{mb:2}} />
-                <Typography variant='h4' color='secondary'>${(product.price / 100).toFixed(2)}</Typography>
+                <Typography variant='h4' color='secondary'>{getCurrency(product.price)}</Typography>
                 <TableContainer>
                     <Table>
                         <TableBody>
@@ -57,6 +71,9 @@ export default function ProductDetails(){
                             </TableRow>
                         </TableBody>
                     </Table>
+                    <LoadingButton onClick={() => handleAddItem(product.id)} component={Link} to='/basket' sx={{height: '55px'}} color='primary' size='large' variant='contained' fullWidth>
+                            {item ? 'Add 1 more' : 'Add to Cart'}
+                    </LoadingButton>
                 </TableContainer>
             </Grid>
         </Grid>

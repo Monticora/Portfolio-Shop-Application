@@ -3,12 +3,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace API.Context
 {
-    public class DataBaseContext : DbContext
+    public class DataBaseContext(DbContextOptions options) : DbContext(options)
     {
-        public DataBaseContext(DbContextOptions options) : base(options)
-        {
-
-        }
         public DbSet<Product> Products {get;set;}
+        public DbSet<Basket> Baskets {get;set;}
     }
 }

@@ -7,6 +7,7 @@ const sleep = (delay: number) => {
 }
 
 axios.defaults.baseURL = 'http://localhost:5000/api';
+axios.defaults.withCredentials = true;
 
 const responseBody = (response: AxiosResponse) => response.data;
 
@@ -33,8 +34,15 @@ const Catalog = {
     details: (id: string) => requests.get(`products/${id}`)
 }
 
+const Basket ={
+    get: () => requests.get('basket'),
+    addItem: (productId: string, quantity = 1) => requests.post(`basket?productId=${productId}&quantity=${quantity}`, {}),
+    removeItem: (productId: string, quantity = 1) => requests.delete(`basket?productId=${productId}&quantity=${quantity}`)
+}
+
 const agent = {
-    Catalog
+    Catalog,
+    Basket
 }
 
 export default agent;
