@@ -3,7 +3,7 @@ import { useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
 import NotFound from '../../errors/NotFound';
 import LoadingComponent from '../../app/layout/LoadingComponent';
-import { Constants, getCurrency } from '../../app/util/util';
+import { getCurrency } from '../../app/util/util';
 import { LoadingButton } from '@mui/lab';
 import { useAppDispatch, useAppSelector } from '../../app/store/configureStore';
 import { addBasketItemAsync } from '../basket/basketSlice';
@@ -64,7 +64,7 @@ export default function ProductDetails(){
                             </TableRow>
                         </TableBody>
                     </Table>
-                    <LoadingButton loading={status.includes(Constants.pendingAddItem + item?.productId)} onClick={() => handleAddItem(product.id)} component={Link} to='/basket' sx={{height: '55px'}} color='primary' size='large' variant='contained' fullWidth>
+                    <LoadingButton loading={status.includes('pending')} onClick={() => handleAddItem(product.id)} component={Link} to='/basket' sx={{height: '55px'}} color='primary' size='large' variant='contained' fullWidth>
                             {item ? 'Add 1 more' : 'Add to Cart'}
                     </LoadingButton>
                 </TableContainer>
