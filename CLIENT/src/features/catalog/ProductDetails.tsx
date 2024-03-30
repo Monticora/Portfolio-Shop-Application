@@ -1,38 +1,32 @@
 import { Typography, Grid, Divider, TableContainer, Table, TableBody, TableRow, TableCell } from '@mui/material';
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
-import { Product } from "../../app/models/product";
-import agent from '../../app/api/agent';
 import NotFound from '../../errors/NotFound';
 import LoadingComponent from '../../app/layout/LoadingComponent';
 import { Constants, getCurrency } from '../../app/util/util';
 import { LoadingButton } from '@mui/lab';
 import { useAppDispatch, useAppSelector } from '../../app/store/configureStore';
 import { addBasketItemAsync } from '../basket/basketSlice';
+import { fetchProductAsync, productSelectors } from './catalogSlice';
 
 export default function ProductDetails(){
 
     const {basket, status} = useAppSelector(state => state.basket);
     const dispatch = useAppDispatch();
     const {id} = useParams<{id: string}>();
-    const [product, setProduct] = useState<Product | null>(null);
-    const [loading, setLoading] = useState(true);
-
+    const product = useAppSelector(state => productSelectors.selectById(state, id!));
+    const {status: productStatus}  = useAppSelector(state => state.catalog);
     const item = basket?.items.find(i => i.productId === product?.id);
 
     function handleAddItem(productId: string){
-        setLoading(true);
         dispatch(addBasketItemAsync({productId}));
     }
 
     useEffect(() => {
-        id && agent.Catalog.details(id)
-        .then(response => setProduct(response))
-        .catch(error => console.log(error))
-        .finally(() => setLoading(false))
-    }, [id, item])
+        if(!product && id) dispatch(fetchProductAsync(id));
+    }, [dispatch, id, item, product])
 
-    if(loading) return <LoadingComponent message='Product loading...'/>
+    if(productStatus.includes('pending')) return <LoadingComponent message='Product loading...'/>
 
     if(!product) return <NotFound />
 
