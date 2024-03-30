@@ -6,3 +6,9 @@ export function getCookie(key: string){
 export function getCurrency(price: number){
     return "$" + (price / 100).toFixed(2);
 }
+
+export class Constants {
+    static readonly pendingAddItem = "pendingAddItem";
+    static readonly idle = "idle";
+    static readonly pendingRemoveItem = "pendingRemoveItem";
+}

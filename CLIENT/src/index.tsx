@@ -10,8 +10,6 @@ import { router } from './app/router/Routes';
 import { Provider } from 'react-redux'
 import { store } from './app/store/configureStore'
 
-
-
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
 

@@ -5,14 +5,14 @@ import { Product } from "../../app/models/product";
 import agent from '../../app/api/agent';
 import NotFound from '../../errors/NotFound';
 import LoadingComponent from '../../app/layout/LoadingComponent';
-import { getCurrency } from '../../app/util/util';
+import { Constants, getCurrency } from '../../app/util/util';
 import { LoadingButton } from '@mui/lab';
 import { useAppDispatch, useAppSelector } from '../../app/store/configureStore';
-import { setBasket } from '../basket/basketSlice';
+import { addBasketItemAsync } from '../basket/basketSlice';
 
 export default function ProductDetails(){
 
-    const {basket} = useAppSelector(state => state.basket);
+    const {basket, status} = useAppSelector(state => state.basket);
     const dispatch = useAppDispatch();
     const {id} = useParams<{id: string}>();
     const [product, setProduct] = useState<Product | null>(null);
@@ -22,10 +22,7 @@ export default function ProductDetails(){
 
     function handleAddItem(productId: string){
         setLoading(true);
-        agent.Basket.addItem(productId)
-                    .then(basket => dispatch(setBasket(basket)))
-                    .catch(error => console.log(error))
-                    .finally(() => setLoading(false));
+        dispatch(addBasketItemAsync({productId}));
     }
 
     useEffect(() => {
@@ -73,7 +70,7 @@ export default function ProductDetails(){
                             </TableRow>
                         </TableBody>
                     </Table>
-                    <LoadingButton onClick={() => handleAddItem(product.id)} component={Link} to='/basket' sx={{height: '55px'}} color='primary' size='large' variant='contained' fullWidth>
+                    <LoadingButton loading={status.includes(Constants.pendingAddItem + item?.productId)} onClick={() => handleAddItem(product.id)} component={Link} to='/basket' sx={{height: '55px'}} color='primary' size='large' variant='contained' fullWidth>
                             {item ? 'Add 1 more' : 'Add to Cart'}
                     </LoadingButton>
                 </TableContainer>
