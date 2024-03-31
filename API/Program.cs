@@ -1,5 +1,7 @@
 using API.Context;
 using API.Middlware;
+using API.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -16,6 +18,13 @@ builder.Services.AddDbContext<DataBaseContext>(option =>
 });
 
 builder.Services.AddCors();
+builder.Services.AddIdentityCore<User>(options => {
+    options.User.RequireUniqueEmail = true;
+})
+                .AddRoles<IdentityRole>()
+                .AddEntityFrameworkStores<DataBaseContext>();
+builder.Services.AddAuthentication();
+builder.Services.AddAuthorization();
 
 var app = builder.Build();
 
@@ -38,11 +47,12 @@ app.MapControllers();
 var scope = app.Services.CreateScope();
 
 var context = scope.ServiceProvider.GetRequiredService<DataBaseContext>();
+var userManager = scope.ServiceProvider.GetRequiredService<UserManager<User>>();
 var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
 try
 {
-    context.Database.Migrate();
-    DbSeed.SeedData(context);
+    await context.Database.MigrateAsync();
+    await DbSeed.SeedData(context, userManager);
 }
 catch(Exception ex)
 {

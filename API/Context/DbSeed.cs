@@ -1,11 +1,30 @@
 using API.Models;
+using Microsoft.AspNetCore.Identity;
 
 namespace API.Context
 {
     public static class DbSeed
     {
-        public static void SeedData(DataBaseContext context)
+        public static async Task SeedData(DataBaseContext context, UserManager<User> userManager)
         {
+            if(!userManager.Users.Any()){
+                var user = new User{
+                    UserName = "bob",
+                    Email = "bob@test.com"
+                };
+
+                await userManager.CreateAsync(user, "Pa$$w0rd");
+                await userManager.AddToRoleAsync(user, "Member");
+
+                var admin = new User{
+                    UserName = "admin",
+                    Email = "adming@test.com"
+                };
+
+                await userManager.CreateAsync(admin, "Pa$$w0rd");
+                await userManager.AddToRoleAsync(admin, "Admin");
+
+            }
             if(context.Products.Any()) return;
 
             var products = new List<Product>
