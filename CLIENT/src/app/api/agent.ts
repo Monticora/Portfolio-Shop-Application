@@ -1,4 +1,5 @@
 import axios, { AxiosResponse } from "axios";
+import { PaginatedResponse } from "../models/pagination";
 
 const sleep = (delay: number) => {
     return new Promise((resolve) => {
@@ -14,6 +15,11 @@ const responseBody = (response: AxiosResponse) => response.data;
 axios.interceptors.response.use(async response => {
     try{
         await sleep(500);
+        const pagination = response.headers['pagination'];
+        if(pagination){
+            response.data = new PaginatedResponse(response.data, JSON.parse(pagination))
+            return response;
+        }
         return response;
     }
     catch(error){
