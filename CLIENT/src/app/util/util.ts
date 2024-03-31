@@ -13,4 +13,5 @@ export class Constants {
     static readonly pendingRemoveItem = "pendingRemoveItem";
     static readonly pendingFetchProducts = "pendingFetchProducts";
     static readonly pendingFetchProduct = "pendingFetchProduct";
+    static readonly pendingFetchFilters = "pendingFetchFilters";
 }
