@@ -12,7 +12,7 @@ export default function BasketPage(){
     const {basket, status } = useAppSelector(state => state.basket);
     const dispatch = useAppDispatch();
 
-    if(!basket) return <Typography variant="h3">Your basket is empy</Typography>
+    if(!basket || basket.items.length === 0) return <Typography variant="h3" align='center'>Your basket is empy</Typography>
 
     return(
     <>

@@ -19,8 +19,10 @@ export const fetchBasketAsync = createAsyncThunk<Basket>(
         try{
             return await agent.Basket.get();
         }
-        catch(error){
-            return thunkAPI.rejectWithValue(error);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        catch(error: any)
+        {
+            return thunkAPI.rejectWithValue({error: error.data});
         }
     },
     {
@@ -37,9 +39,10 @@ export const addBasketItemAsync = createAsyncThunk<Basket, {productId: string, q
         {
             return await agent.Basket.addItem(productId, quantity);
         }
-        catch(error)
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        catch(error: any)
         {
-            return thunkAPI.rejectWithValue({error});
+            return thunkAPI.rejectWithValue({error: error.data});
         }
     }
 )
@@ -51,9 +54,10 @@ export const removeBasketItemAsync = createAsyncThunk<void, {productId: string, 
         {
             return await agent.Basket.removeItem(productId, quantity);
         }
-        catch(error)
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        catch(error: any)
         {
-            return thunkAPI.rejectWithValue({error});
+            return thunkAPI.rejectWithValue({error: error.data});
         }
     }
 )

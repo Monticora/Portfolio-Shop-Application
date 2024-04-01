@@ -17,16 +17,14 @@ const initialState: AccountState = {
 export const signInUser = createAsyncThunk<User, FieldValues>(
     'account/signInUser',
     async (data, thunkAPI) => {
-        try{
+        try {
             const userDto = await agent.Account.login(data);
             const {basket, ...user} = userDto;
-            if(basket) thunkAPI.dispatch(setBasket(basket));
+            if (basket) thunkAPI.dispatch(setBasket(basket));
             localStorage.setItem('user', JSON.stringify(user));
             return user;
-        }
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        catch(error: any)
-        {
+        } catch (error: any) {
             return thunkAPI.rejectWithValue({error: error.data});
         }
     }

@@ -40,9 +40,10 @@ export const fetchProductsAsync = createAsyncThunk<Product[], void, {state: Root
             thunkAPI.dispatch(setMetaData(response.metaData));
             return response.items;
         }
-        catch(error)
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        catch(error: any)
         {
-            return thunkAPI.rejectWithValue({error});
+            return thunkAPI.rejectWithValue({error: error.data});
         }
     }
 )
@@ -54,9 +55,10 @@ export const fetchProductAsync = createAsyncThunk<Product, string>(
         {
             return await agent.Catalog.details(productId);
         }
-        catch(error)
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        catch(error: any)
         {
-            return thunkAPI.rejectWithValue({error});
+            return thunkAPI.rejectWithValue({error: error.data});
         }
     }
 )
@@ -68,9 +70,10 @@ export const fetchFiltersAsync = createAsyncThunk(
         {
             return agent.Catalog.fetchFilters();
         }
-        catch(error)
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        catch(error: any)
         {
-            return thunkAPI.rejectWithValue({error});
+            return thunkAPI.rejectWithValue({error: error.data});
         }
     }
 )
