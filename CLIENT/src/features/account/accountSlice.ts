@@ -5,6 +5,7 @@ import agent from "../../app/api/agent";
 import { router } from "../../app/router/Routes";
 import { toast } from "react-toastify";
 import { setBasket } from "../basket/basketSlice";
+import { Basket } from "../../app/models/basket";
 
 interface AccountState{
     user: User | null;
@@ -19,8 +20,9 @@ export const signInUser = createAsyncThunk<User, FieldValues>(
     async (data, thunkAPI) => {
         try {
             const userDto = await agent.Account.login(data);
-            const {basket, ...user} = userDto;
-            if (basket) thunkAPI.dispatch(setBasket(basket));
+            const {...user} = userDto;
+            const userBasketDto = user.basketDto as Basket;
+            if(userBasketDto) thunkAPI.dispatch(setBasket(userBasketDto));
             localStorage.setItem('user', JSON.stringify(user));
             return user;
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -36,8 +38,9 @@ export const fetchCurrentUser = createAsyncThunk<User>(
         thunkAPI.dispatch(setUser(JSON.parse(localStorage.getItem('user')!)))
         try{
             const userDto = await agent.Account.currentUser();
-            const {basket, ...user} = userDto;
-            if(basket) thunkAPI.dispatch(setBasket(basket));
+            const {...user} = userDto;
+            const userBasketDto = user.basketDto as Basket;
+            if(userBasketDto) thunkAPI.dispatch(setBasket(userBasketDto));
             localStorage.setItem('user', JSON.stringify(user));
             return user;
         }

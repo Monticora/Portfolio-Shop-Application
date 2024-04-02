@@ -20,7 +20,7 @@ export default function Login() {
     const navigate = useNavigate();
     const location = useLocation();
     const dispatch = useAppDispatch();
-    const {register,handleSubmit, formState: {isSubmitting, errors, isValid}} = useForm({
+    const {register, handleSubmit, formState: {isSubmitting, errors, isValid}} = useForm({
         mode: 'onTouched'
     });
 

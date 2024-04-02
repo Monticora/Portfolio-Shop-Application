@@ -44,7 +44,7 @@ namespace API.Controllers
             {
                 Email = user.Email,
                 Token = await _tokenService.GenerateToken(user),
-                BasketDto = anonBasket != null ? anonBasket.ReturnBasketDto() : userBasket?.ReturnBasketDto()
+                Basket = anonBasket != null ? anonBasket.ReturnBasketDto() : userBasket?.ReturnBasketDto()
             };
         }
 
@@ -81,7 +81,7 @@ namespace API.Controllers
             {
                 Email = user.Email,
                 Token = await _tokenService.GenerateToken(user),
-                BasketDto = userBasket?.ReturnBasketDto()
+                Basket = userBasket?.ReturnBasketDto()
             };
         }
         private async Task<Basket> RetriveBasket(string buyerId)
