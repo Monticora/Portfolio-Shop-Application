@@ -3,6 +3,7 @@ using System;
 using API.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,44 +11,14 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace API.Context.Migrations
 {
     [DbContext(typeof(DataBaseContext))]
-    partial class DataBaseContextModelSnapshot : ModelSnapshot
+    [Migration("20240402131757_ChangeIdToStringInsideProductItemOrdered")]
+    partial class ChangeIdToStringInsideProductItemOrdered
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.3");
-
-            modelBuilder.Entity("API.Models.Address", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Address1")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Address2")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("City")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Country")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("FullName")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("State")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Zip")
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Address");
-                });
 
             modelBuilder.Entity("API.Models.Basket", b =>
                 {
@@ -175,9 +146,6 @@ namespace API.Context.Migrations
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("INTEGER");
 
-                    b.Property<Guid?>("AddressId")
-                        .HasColumnType("TEXT");
-
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
                         .HasColumnType("TEXT");
@@ -224,8 +192,6 @@ namespace API.Context.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("AddressId");
-
                     b.HasIndex("NormalizedEmail")
                         .HasDatabaseName("EmailIndex");
 
@@ -264,13 +230,13 @@ namespace API.Context.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "1d989989-6b50-41e5-8cf1-19e54c2171df",
+                            Id = "b6bd6298-8272-4a32-b308-21c4a45f200f",
                             Name = "Member",
                             NormalizedName = "MEMBER"
                         },
                         new
                         {
-                            Id = "15121455-cbf1-4ffb-912b-b84bcde0b003",
+                            Id = "5ce079e9-27c8-427c-8bda-eaee2dec0dc9",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         });
@@ -419,9 +385,6 @@ namespace API.Context.Migrations
                             b1.Property<string>("FullName")
                                 .HasColumnType("TEXT");
 
-                            b1.Property<Guid>("Id")
-                                .HasColumnType("TEXT");
-
                             b1.Property<string>("State")
                                 .HasColumnType("TEXT");
 
@@ -469,15 +432,6 @@ namespace API.Context.Migrations
                         });
 
                     b.Navigation("ItemOrdered");
-                });
-
-            modelBuilder.Entity("API.Models.User", b =>
-                {
-                    b.HasOne("API.Models.Address", "Address")
-                        .WithMany()
-                        .HasForeignKey("AddressId");
-
-                    b.Navigation("Address");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
