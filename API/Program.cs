@@ -44,7 +44,8 @@ builder.Services.AddSwaggerGen(c => {
 
 builder.Services.AddDbContext<DataBaseContext>(option => 
 {
-    option.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection"));
+    //option.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection"));
+    option.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
 
 builder.Services.AddCors();
@@ -82,6 +83,9 @@ if (app.Environment.IsDevelopment())
     });
 }
 
+app.UseDefaultFiles();
+app.UseStaticFiles();
+
 app.UseCors(option => {
     option.AllowAnyHeader().AllowAnyMethod().AllowCredentials().WithOrigins("http://localhost:3000");
 });
@@ -91,6 +95,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+app.MapFallbackToController("Index", "Fallback");
 
 var scope = app.Services.CreateScope();
 
