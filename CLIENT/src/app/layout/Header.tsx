@@ -70,6 +70,16 @@ export default function Header({darkMode, handleThemeChange}: Props){
                             {title.toUpperCase()}
                         </ListItem>
                     ))}
+                    {
+                        user && 
+                                <ListItem
+                                    component={NavLink}
+                                    to={'/admin'}
+                                    sx= {navStyles}
+                                >
+                                AdminPage
+                                </ListItem>
+                    }
                 </List>
 
                 <Box display='flex' alignItems='center'>
