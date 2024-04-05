@@ -74,7 +74,10 @@ else
 }
 builder.Services.AddDbContext<DataBaseContext>(opt =>
 {
-    opt.UseNpgsql(connString);
+    //opt.UseNpgsql(connString);
+    opt.UseNpgsql(connString, builder => {
+    builder.EnableRetryOnFailure(5, TimeSpan.FromSeconds(10), null);
+});
 });
 
 
