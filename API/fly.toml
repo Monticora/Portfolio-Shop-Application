@@ -1,4 +1,4 @@
-# fly.toml app configuration file generated for portfolio-shop on 2024-04-05T10:36:11+03:00
+# fly.toml app configuration file generated for portfolio-shop on 2024-04-07T17:31:31+03:00
 #
 # See https://fly.io/docs/reference/configuration/ for information about how to use this file.
 #
@@ -10,7 +10,7 @@ primary_region = 'ams'
   image = 'monticora228/portfolio-shop:imagepush'
 
 [env]
-  ASPNETCORE_URLS="http://+:8080"  
+  ASPNETCORE_URLS = 'http://+:8080'
 
 [http_service]
   internal_port = 8080
