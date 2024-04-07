@@ -12,13 +12,15 @@ using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Add services to the container.
+
 builder.Services.AddControllers();
 builder.Services.AddAutoMapper(typeof(MappingProfiles).Assembly);
-
+// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-
-builder.Services.AddSwaggerGen(c => {
-    
+builder.Services.AddSwaggerGen(c =>
+{
+    // Include 'SecurityScheme' to use JWT Authentication
     var jwtSecurityScheme = new OpenApiSecurityScheme
     {
         BearerFormat = "JWT",
@@ -27,6 +29,7 @@ builder.Services.AddSwaggerGen(c => {
         Type = SecuritySchemeType.ApiKey,
         Scheme = JwtBearerDefaults.AuthenticationScheme,
         Description = "Put Bearer + your token in the box below",
+
         Reference = new OpenApiReference
         {
             Id = JwtBearerDefaults.AuthenticationScheme,
@@ -36,19 +39,11 @@ builder.Services.AddSwaggerGen(c => {
 
     c.AddSecurityDefinition(jwtSecurityScheme.Reference.Id, jwtSecurityScheme);
 
-    c.AddSecurityRequirement(new OpenApiSecurityRequirement{
-        {
-            jwtSecurityScheme, Array.Empty<string>()
-        }
+    c.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        { jwtSecurityScheme, Array.Empty<string>() }
     });
-
 });
-
-/*builder.Services.AddDbContext<DataBaseContext>(option => 
-{
-    //option.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection"));
-    option.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"));
-});*/
 
 string connString;
 if (builder.Environment.IsDevelopment())
@@ -68,50 +63,48 @@ else
     var pgPass = pgUserPass.Split(":")[1];
     var pgHost = pgHostPort.Split(":")[0];
     var pgPort = pgHostPort.Split(":")[1];
-    //var updatedHost = pgHost.Replace("flycast", "internal");
+    var updatedHost = pgHost.Replace("flycast", "internal");
 
-    connString = $"Server={pgHost};Port={pgPort};User Id={pgUser};Password={pgPass};Database={pgDb};";
+    connString = $"Server={updatedHost};Port={pgPort};User Id={pgUser};Password={pgPass};Database={pgDb};";
 }
 builder.Services.AddDbContext<DataBaseContext>(opt =>
 {
-    //opt.UseNpgsql(connString);
-    opt.UseNpgsql(connString, builder => {
-    builder.EnableRetryOnFailure(5, TimeSpan.FromSeconds(10), null);
+    opt.UseNpgsql(connString);
 });
-});
-
 
 builder.Services.AddCors();
-
-builder.Services.AddIdentityCore<User>(options => {
-    options.User.RequireUniqueEmail = true;
+builder.Services.AddIdentityCore<User>(opt =>
+{
+    opt.User.RequireUniqueEmail = true;
 })
-                .AddRoles<IdentityRole>()
-                .AddEntityFrameworkStores<DataBaseContext>();
-
+    .AddRoles<IdentityRole>()
+    .AddEntityFrameworkStores<DataBaseContext>();
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                .AddJwtBearer(options => {
-                    options.TokenValidationParameters = new TokenValidationParameters
-                    {
-                        ValidateIssuer = false,
-                        ValidateAudience = false,
-                        ValidateLifetime = true,
-                        ValidateIssuerSigningKey = true,
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JWTSettings:TokenKey"]))
-                    };
-                });
-
+    .AddJwtBearer(opt =>
+    {
+        opt.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = false,
+            ValidateAudience = false,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8
+                .GetBytes(builder.Configuration["JWTSettings:TokenKey"]))
+        };
+    });
 builder.Services.AddAuthorization();
 builder.Services.AddScoped<TokenService>();
 
 var app = builder.Build();
 
+// Configure the HTTP request pipeline.
 app.UseMiddleware<ExceptionMiddleware>();
 
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI(c => {
+    app.UseSwaggerUI(c => 
+    {
         c.ConfigObject.AdditionalItems.Add("persistAuthorization", "true");
     });
 }
@@ -119,30 +112,29 @@ if (app.Environment.IsDevelopment())
 app.UseDefaultFiles();
 app.UseStaticFiles();
 
-app.UseCors(option => {
-    option.AllowAnyHeader().AllowAnyMethod().AllowCredentials().WithOrigins("http://localhost:3000");
+app.UseCors(opt =>
+{
+    opt.AllowAnyHeader().AllowAnyMethod().AllowCredentials().WithOrigins("http://localhost:3000");
 });
 
 app.UseAuthentication();
-
 app.UseAuthorization();
 
 app.MapControllers();
 app.MapFallbackToController("Index", "Fallback");
 
 var scope = app.Services.CreateScope();
-
 var context = scope.ServiceProvider.GetRequiredService<DataBaseContext>();
 var userManager = scope.ServiceProvider.GetRequiredService<UserManager<User>>();
 var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
 try
 {
-    await context.Database.MigrateAsync();
+    context.Database.Migrate();
     await DbSeed.SeedData(context, userManager);
 }
-catch(Exception ex)
+catch (Exception ex)
 {
-    logger.LogError(ex, "A problem during migration");
+    logger.LogError(ex, "A problem occurred during migration");
 }
 
 app.Run();
